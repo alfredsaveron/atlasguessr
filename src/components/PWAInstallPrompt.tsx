@@ -37,7 +37,7 @@ export function PWAInstallPrompt() {
 		window.addEventListener("beforeinstallprompt", handler as EventListener);
 
 		// For debugging - show install button after 2 seconds if in development
-		const isDev = process.env.NODE_ENV === "development" || window.location.hostname === "localhost";
+		const isDev = import.meta.env.DEV || window.location.hostname === "localhost";
 		if (isDev && !isStandalone) {
 			setTimeout(() => {
 				if (!deferredPrompt) {

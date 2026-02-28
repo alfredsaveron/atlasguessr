@@ -1,0 +1,73 @@
+---
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import "@/styles/globals.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Atlasguessr - Üniversite Program Tahmin Oyunu",
+	description = "Türkiye'deki üniversite programlarını tahmin etme oyunu. Offline oynanabilen eğitici tahmin oyunu.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="tr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="theme-color" content="#0f172a" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content="Atlasguessr" />
+		<meta name="application-name" content="Atlasguessr" />
+		<meta name="msapplication-TileColor" content="#0f172a" />
+		<meta name="msapplication-config" content="none" />
+		<meta name="description" content={description} />
+		<meta name="keywords" content="üniversite,program,tahmin,oyun,eğitim,türkiye" />
+		<meta property="og:title" content="Atlasguessr" />
+		<meta property="og:description" content="Üniversite Program Tahmin Oyunu" />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="tr_TR" />
+		<title>{title}</title>
+
+		<link rel="manifest" href="/manifest.json" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+		<link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+		<link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png" />
+		<link rel="icon" href="/android-chrome-512x512.png" sizes="512x512" type="image/png" />
+
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+		</script>
+		<script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-N6HWL9CP"></script>
+		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-SKL8NEHMCN"></script>
+		<script is:inline>
+			const dataLayer = (window.dataLayer = window.dataLayer || []);
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-SKL8NEHMCN");
+		</script>
+	</head>
+	<body class="min-h-screen bg-background text-foreground antialiased">
+		<noscript>
+			<iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-N6HWL9CP"
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"
+				title="Google Tag Manager"
+			/>
+		</noscript>
+		<slot />
+		<PWAInstallPrompt client:load />
+		<ServiceWorkerRegistration client:load />
+	</body>
+</html>

@@ -4,46 +4,42 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "next build",
-		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-		"upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+		"build": "astro build",
+		"preview": "astro preview",
+		"preview:wrangler": "astro build && wrangler dev",
+		"deploy": "astro build && wrangler deploy",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
 		"check": "biome check .",
 		"check:unsafe": "biome check --write --unsafe .",
 		"check:write": "biome check --write .",
-		"dev": "next dev --turbo",
-		"start": "next start",
-		"typecheck": "tsc --noEmit"
+		"dev": "astro dev",
+		"start": "astro preview",
+		"typecheck": "astro check"
 	},
 	"dependencies": {
-		"@next/third-parties": "^15.4.4",
-		"@opennextjs/cloudflare": "^1.6.1",
+		"@astrojs/cloudflare": "^12.6.12",
+		"@astrojs/react": "^4.4.2",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-slot": "^1.2.3",
-		"@t3-oss/env-nextjs": "^0.12.0",
+		"@tailwindcss/vite": "^4.2.1",
+		"astro": "^5.18.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.526.0",
-		"next": "15.3",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"tailwind-merge": "^3.3.1",
 		"zod": "^3.24.2"
 	},
 	"devDependencies": {
+		"@astrojs/check": "^0.9.6",
 		"@biomejs/biome": "1.9.4",
-		"@tailwindcss/postcss": "^4.0.15",
 		"@types/node": "^20.14.10",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
-		"postcss": "^8.5.3",
 		"tailwindcss": "^4.0.15",
 		"tw-animate-css": "^1.3.6",
 		"typescript": "^5.8.2",
 		"wrangler": "^4.26.0"
-	},
-	"ct3aMetadata": {
-		"initVersion": "7.39.3"
 	}
 }

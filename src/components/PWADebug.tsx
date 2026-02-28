@@ -125,12 +125,12 @@ export function PWADebug() {
 		checkPWAStatus();
 
 		// Show debug in development
-		if (process.env.NODE_ENV === "development") {
+		if (import.meta.env.DEV) {
 			setShowDebug(true);
 		}
 	}, []);
 
-	if (!showDebug && process.env.NODE_ENV !== "development") return null;
+	if (!showDebug && !import.meta.env.DEV) return null;
 
 	const allGood = status.errors.length === 0 && status.hasManifest && status.hasServiceWorker && status.isHttps;
 

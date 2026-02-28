@@ -1,0 +1,10 @@
+---
+import { OynaPage } from "@/components/OynaPage";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const initialRankingType = Astro.url.searchParams.get("siralama");
+---
+
+<BaseLayout title="Atlasguessr - Oyna">
+	<OynaPage client:load initialRankingType={initialRankingType} />
+</BaseLayout>

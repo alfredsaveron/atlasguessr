@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { ActionButtons } from "@/components/ActionButtons";
@@ -14,16 +12,30 @@ import { LoadingState } from "@/components/LoadingState";
 import type { RankingType } from "@/components/RankingTypeSelector";
 import { ShowAnswerModal } from "@/components/ShowAnswerModal";
 import { type Program, gameDataService } from "@/lib/gameData";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-function OynaPageContent() {
-	const router = useRouter();
-	const searchParams = useSearchParams();
+const RANKING_TYPES: RankingType[] = ["Sayısal", "Eşit Ağırlık", "Sözel", "Yabancı Dil", "Rastgele"];
 
-	// Get ranking type from URL params
-	const rankingTypeParam = searchParams.get("siralama");
-	const selectedRankingType = rankingTypeParam as RankingType | null;
+const parseRankingType = (rankingType: string | null | undefined): RankingType | null => {
+	if (!rankingType) {
+		return null;
+	}
+
+	if (RANKING_TYPES.includes(rankingType as RankingType)) {
+		return rankingType as RankingType;
+	}
+
+	return null;
+};
+
+interface OynaPageProps {
+	initialRankingType?: string | null;
+}
+
+export function OynaPage({ initialRankingType = null }: OynaPageProps) {
+	const [selectedRankingType, setSelectedRankingType] = useState<RankingType | null>(() =>
+		parseRankingType(initialRankingType),
+	);
 
 	const [allUniversityNames, setAllUniversityNames] = useState<string[]>([]);
 	const [allProgramNames, setAllProgramNames] = useState<string[]>([]);
@@ -55,47 +67,41 @@ function OynaPageContent() {
 	const universityInputRef = useRef<HTMLInputElement>(null);
 	const programInputRef = useRef<HTMLInputElement>(null);
 
-	// Initialize game when component mounts or ranking type changes
+	useEffect(() => {
+		setSelectedRankingType(parseRankingType(initialRankingType));
+	}, [initialRankingType]);
+
 	useEffect(() => {
 		if (!selectedRankingType) {
-			// Redirect to home if no ranking type is specified
-			router.push("/");
+			window.location.href = "/";
 			return;
 		}
 
-		initializeGame();
-	}, [selectedRankingType, router]);
+		initializeGame(selectedRankingType);
+	}, [selectedRankingType]);
 
-	const initializeGame = async () => {
-		if (!selectedRankingType) return;
-
+	const initializeGame = async (rankingType: RankingType) => {
 		try {
 			setIsLoading(true);
 
-			// Preload all data first
 			await gameDataService.preloadData();
 
-			// Get program names and university names
 			const universityNames = await gameDataService.getUniversityNames();
 			setAllUniversityNames(universityNames);
 
-			// Get a random program based on the selected ranking type
 			let randomProgram: Program;
 			let programNames: string[];
 
-			if (selectedRankingType === "Rastgele") {
-				// Get random program from all types
+			if (rankingType === "Rastgele") {
 				randomProgram = await gameDataService.getRandomProgram();
 				programNames = await gameDataService.getProgramNames();
 			} else {
-				// Get random program from specific ranking type
-				randomProgram = await gameDataService.getRandomProgramByRankingType(selectedRankingType);
-				programNames = await gameDataService.getProgramNamesByRankingType(selectedRankingType);
+				randomProgram = await gameDataService.getRandomProgramByRankingType(rankingType);
+				programNames = await gameDataService.getProgramNamesByRankingType(rankingType);
 			}
 
 			setCurrentProgram(randomProgram);
 			setAllProgramNames(programNames);
-
 			setIsLoading(false);
 		} catch (error) {
 			console.error("Failed to load data:", error);
@@ -104,7 +110,6 @@ function OynaPageContent() {
 	};
 
 	const normalizeText = (text: string) => {
-		// Proper Turkish case conversion
 		return text
 			.toLocaleLowerCase("tr-TR")
 			.replace(/ğ/g, "g")
@@ -116,7 +121,6 @@ function OynaPageContent() {
 			.trim();
 	};
 
-	// Check if user's guess is exactly the same as the correct answer (for display purposes)
 	const isExactMatch = (guess: string, target: string) => {
 		return guess.trim() === target.trim();
 	};
@@ -152,7 +156,6 @@ function OynaPageContent() {
 		}
 	};
 
-	// Show dropdown with all city universities on focus if input is empty
 	const handleUniversityInputFocus = () => {
 		if (currentProgram) {
 			gameDataService
@@ -167,7 +170,7 @@ function OynaPageContent() {
 	const handleProgramInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setProgramGuess(value);
-		setShowProgramDropdown(true); // Show dropdown on input change
+		setShowProgramDropdown(true);
 		let sourcePrograms: string[] = [];
 		if (programsForSelectedUniversity.length > 0) {
 			sourcePrograms = programsForSelectedUniversity;
@@ -186,8 +189,7 @@ function OynaPageContent() {
 		}
 	};
 
-	const handleProgramInputFocus = (e?: React.FocusEvent<HTMLInputElement>) => {
-		// Only open dropdown if focus was by user (not programmatic)
+	const handleProgramInputFocus = () => {
 		if (programInputFocusedByUser) {
 			setShowProgramDropdown(true);
 			let sourcePrograms: string[] = [];
@@ -203,14 +205,12 @@ function OynaPageContent() {
 	const selectUniversitySuggestion = async (suggestion: string) => {
 		setUniversityGuess(suggestion);
 		setFilteredUniversitySuggestions([]);
-		setShowProgramDropdown(false); // Hide dropdown after picking university
-		setProgramInputFocusedByUser(false); // Mark that next focus is programmatic
-		programInputRef.current?.focus(); // Move focus to program input
+		setShowProgramDropdown(false);
+		setProgramInputFocusedByUser(false);
+		programInputRef.current?.focus();
 
-		// Fetch programs for selected university
 		if (currentProgram?.rankingType) {
 			try {
-				// Use the current program's actual ranking type, not the selected one (which might be "Rastgele")
 				const actualRankingType = currentProgram.rankingType;
 				const programNames = await gameDataService.getProgramNamesByUniversity(suggestion, actualRankingType);
 				setProgramsForSelectedUniversity(programNames);
@@ -233,11 +233,8 @@ function OynaPageContent() {
 		const normalizedUniversityTarget = normalizeText(currentProgram.universityName);
 
 		const universityMatch = normalizedUniversityGuess === normalizedUniversityTarget;
-
-		// Use flexible program matching that ignores language variants
 		const programMatch = gameDataService.checkProgramNameMatch(programGuess, currentProgram);
 
-		// Add to guess history
 		const newGuess = {
 			university: universityGuess,
 			program: programGuess,
@@ -260,8 +257,8 @@ function OynaPageContent() {
 		}
 
 		setAttempts(attempts + 1);
-		if (!universityMatch) setUniversityGuess(""); // Clear only if incorrect
-		if (!programMatch) setProgramGuess(""); // Clear only if incorrect
+		if (!universityMatch) setUniversityGuess("");
+		if (!programMatch) setProgramGuess("");
 		setFilteredUniversitySuggestions([]);
 		setFilteredProgramSuggestions([]);
 	};
@@ -298,8 +295,7 @@ function OynaPageContent() {
 	};
 
 	const startNewGameSession = () => {
-		// Navigate back to home to select a new ranking type
-		router.push("/");
+		window.location.href = "/";
 	};
 
 	if (isLoading) {
@@ -313,7 +309,9 @@ function OynaPageContent() {
 					<p className="text-gray-600 dark:text-gray-300">Oyun yüklenemedi</p>
 					<button
 						type="button"
-						onClick={() => router.push("/")}
+						onClick={() => {
+							window.location.href = "/";
+						}}
 						className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
 					>
 						Ana Sayfaya Dön
@@ -400,7 +398,6 @@ function OynaPageContent() {
 					</div>
 				</div>
 
-				{/* Game Won Modal */}
 				{currentProgram && (
 					<GameWonModal
 						isOpen={gameWon}
@@ -412,7 +409,6 @@ function OynaPageContent() {
 					/>
 				)}
 
-				{/* Show Answer Modal */}
 				{currentProgram && (
 					<ShowAnswerModal
 						isOpen={showAnswerModal}
@@ -425,16 +421,6 @@ function OynaPageContent() {
 
 				<Footer />
 			</div>
-
-			{/* All custom animations and related CSS have been removed for a snappy, animation-free experience. */}
 		</div>
-	);
-}
-
-export default function OynaPage() {
-	return (
-		<Suspense fallback={<LoadingState isLoading={true} currentProgram={undefined} />}>
-			<OynaPageContent />
-		</Suspense>
 	);
 }
