@@ -19,6 +19,8 @@
 	"dependencies": {
 		"@astrojs/cloudflare": "^12.6.12",
 		"@astrojs/react": "^4.4.2",
+		"@fontsource-variable/manrope": "^5.2.8",
+		"@fontsource/newsreader": "^5.2.10",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@tailwindcss/vite": "^4.2.1",

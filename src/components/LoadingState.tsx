@@ -12,11 +12,11 @@ interface LoadingStateProps {
 export function LoadingState({ isLoading, currentProgram }: LoadingStateProps) {
 	if (isLoading) {
 		return (
-			<div className="flex min-h-[50vh] items-center justify-center">
+			<div className="flex min-h-[48vh] items-center justify-center">
 				<Card className="w-full max-w-md">
 					<CardContent className="pt-6 text-center">
-						<div className="mx-auto mb-4 h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent" />
-						<p className="text-lg">Veriler yükleniyor...</p>
+						<div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary/25 border-t-primary" />
+						<p className="text-muted-foreground text-sm sm:text-base">Veriler hazırlanıyor...</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -25,10 +25,10 @@ export function LoadingState({ isLoading, currentProgram }: LoadingStateProps) {
 
 	if (!currentProgram) {
 		return (
-			<div className="flex min-h-[50vh] items-center justify-center">
+			<div className="flex min-h-[48vh] items-center justify-center">
 				<Card className="w-full max-w-md">
 					<CardContent className="pt-6 text-center">
-						<p className="text-lg text-red-600">Veri yüklenirken hata oluştu.</p>
+						<p className="text-sm sm:text-base">Veri yüklenirken bir sorun oluştu.</p>
 						<Button onClick={() => window.location.reload()} className="mt-4">
 							Yeniden Dene
 						</Button>

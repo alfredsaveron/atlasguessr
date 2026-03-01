@@ -2,64 +2,85 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Program } from "@/lib/gameData";
-import { DollarSign, GraduationCap, ListOrdered, MapPin, Trophy, University } from "lucide-react";
+import { DollarSign, ListOrdered, MapPin, Trophy, University } from "lucide-react";
+import type React from "react";
 
 interface HintsCardProps {
 	currentProgram: Program;
 }
 
+function HintRow({
+	label,
+	value,
+	icon: Icon,
+	toneClass,
+	iconClass,
+}: {
+	label: string;
+	value: string;
+	icon: React.ComponentType<{ className?: string }>;
+	toneClass: string;
+	iconClass: string;
+}) {
+	return (
+		<div className={`flex items-center gap-3 rounded-xl border px-3 py-3 ${toneClass}`}>
+			<Icon className={`h-4 w-4 ${iconClass}`} />
+			<div className="min-w-0">
+				<p className="text-muted-foreground text-xs uppercase tracking-wide">{label}</p>
+				<p className="truncate font-medium text-sm sm:text-base">{value}</p>
+			</div>
+		</div>
+	);
+}
+
 export function HintsCard({ currentProgram }: HintsCardProps) {
 	return (
-		<Card>
+		<Card className="border-border/80 bg-card/95">
 			<CardHeader>
-				<CardTitle className="flex items-center gap-2">
-					<GraduationCap className="h-5 w-5" />
-					İpuçları
-				</CardTitle>
+				<CardTitle className="text-xl">İpuçları</CardTitle>
 			</CardHeader>
-			<CardContent className="space-y-3 sm:space-y-4">
-				<div className="flex items-center gap-2 rounded-lg bg-blue-50 p-2 sm:p-3 dark:border dark:border-blue-500/20 dark:bg-slate-700/50">
-					<MapPin className="h-4 w-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-					<span className="font-medium text-gray-900 text-sm sm:text-base dark:text-gray-100">Şehir:</span>
-					<span className="text-blue-700 text-sm sm:text-base dark:text-blue-300">{currentProgram.cityName}</span>
-				</div>
+			<CardContent className="space-y-3">
+				<HintRow
+					label="Şehir"
+					value={currentProgram.cityName}
+					icon={MapPin}
+					toneClass="border-sky-200/60 bg-sky-500/[0.08] dark:border-sky-500/25"
+					iconClass="text-sky-700 dark:text-sky-300"
+				/>
+				<HintRow
+					label="Üniversite Türü"
+					value={currentProgram.programType}
+					icon={University}
+					toneClass="border-emerald-200/60 bg-emerald-500/[0.08] dark:border-emerald-500/25"
+					iconClass="text-emerald-700 dark:text-emerald-300"
+				/>
+				<HintRow
+					label="Ücret Durumu"
+					value={currentProgram.scholarshipType}
+					icon={DollarSign}
+					toneClass="border-violet-200/60 bg-violet-500/[0.08] dark:border-violet-500/25"
+					iconClass="text-violet-700 dark:text-violet-300"
+				/>
+				<HintRow
+					label="Sıralama Türü"
+					value={currentProgram.rankingType}
+					icon={ListOrdered}
+					toneClass="border-amber-200/60 bg-amber-500/[0.1] dark:border-amber-500/25"
+					iconClass="text-amber-700 dark:text-amber-300"
+				/>
 
-				<div className="flex items-center gap-2 rounded-lg bg-green-50 p-2 sm:p-3 dark:border dark:border-green-500/20 dark:bg-slate-700/50">
-					<University className="h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-					<span className="font-medium text-gray-900 text-sm sm:text-base dark:text-gray-100">Üniversite Türü:</span>
-					<span className="text-green-700 text-sm sm:text-base dark:text-green-300">{currentProgram.programType}</span>
-				</div>
-
-				<div className="flex items-center gap-2 rounded-lg bg-purple-50 p-2 sm:p-3 dark:border dark:border-purple-500/20 dark:bg-slate-700/50">
-					<DollarSign className="h-4 w-4 flex-shrink-0 text-purple-600 dark:text-purple-400" />
-					<span className="font-medium text-gray-900 text-sm sm:text-base dark:text-gray-100">Ücret Durumu:</span>
-					<span className="text-purple-700 text-sm sm:text-base dark:text-purple-300">
-						{currentProgram.scholarshipType}
-					</span>
-				</div>
-
-				<div className="rounded-lg bg-yellow-50 p-2 sm:p-3 dark:border dark:border-yellow-500/20 dark:bg-slate-700/50">
+				<div className="rounded-xl border border-rose-200/70 bg-rose-500/[0.08] p-3 dark:border-rose-500/25">
 					<div className="mb-2 flex items-center gap-2">
-						<Trophy className="h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
-						<span className="font-medium text-gray-900 text-sm sm:text-base dark:text-gray-100">
-							Son Yerleşen Sıralamaları (4 Yıl):
-						</span>
+						<Trophy className="h-4 w-4 text-rose-700 dark:text-rose-300" />
+						<p className="font-medium text-sm">Son Yerleşen Sıralamaları</p>
 					</div>
-					<ul className="list-inside list-disc space-y-1 text-xs text-yellow-700 sm:text-sm dark:text-yellow-300">
-						{currentProgram.rank.map((r: string, i: number) => (
-							<li key={r}>
-								{2024 - i}: {r}
+					<ul className="space-y-1 text-muted-foreground text-sm">
+						{currentProgram.rank.map((rank, index) => (
+							<li key={rank}>
+								{2024 - index}: {rank}
 							</li>
 						))}
 					</ul>
-				</div>
-
-				<div className="flex items-center gap-2 rounded-lg bg-orange-50 p-2 sm:p-3 dark:border dark:border-orange-500/20 dark:bg-slate-700/50">
-					<ListOrdered className="h-4 w-4 flex-shrink-0 text-orange-600 dark:text-orange-400" />
-					<span className="font-medium text-gray-900 text-sm sm:text-base dark:text-gray-100">Sıralama Türü:</span>
-					<span className="text-orange-700 text-sm sm:text-base dark:text-orange-300">
-						{currentProgram.rankingType}
-					</span>
 				</div>
 			</CardContent>
 		</Card>

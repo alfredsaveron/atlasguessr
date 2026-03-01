@@ -18,54 +18,46 @@ export function GuessHistory({ guessHistory, currentProgram, isExactMatch }: Gue
 	if (guessHistory.length === 0) return null;
 
 	return (
-		<Card className="mb-4 sm:mb-6">
+		<Card className="mb-5 border-border/80 bg-card/96 sm:mb-7">
 			<CardHeader>
-				<CardTitle>Tahmin Geçmişi</CardTitle>
+				<CardTitle className="text-xl">Tahmin Geçmişi</CardTitle>
 			</CardHeader>
-			<CardContent>
-				<div className="space-y-2">
-					{guessHistory.map((guess, index) => (
+			<CardContent className="space-y-2.5">
+				{guessHistory.map((guess, index) => (
+					<div
+						key={`${guess.university}-${guess.program}-${index}`}
+						className="grid grid-cols-1 gap-2 rounded-xl border border-slate-200/70 bg-slate-500/[0.06] p-3 lg:grid-cols-2 dark:border-slate-500/25"
+					>
 						<div
-							key={`${guess.university}-${guess.program}-${index}`}
-							className="grid grid-cols-1 gap-2 rounded-lg bg-gray-50 p-2 sm:p-3 lg:grid-cols-2 dark:bg-slate-700/60"
+							className={`rounded-lg border p-2.5 ${
+								guess.universityMatch
+									? "border-emerald-200/70 bg-emerald-500/[0.12] dark:border-emerald-500/30"
+									: "border-rose-200/70 bg-rose-500/[0.12] dark:border-rose-500/30"
+							}`}
 						>
-							<div
-								className={`rounded p-2 text-sm sm:text-base ${
-									guess.universityMatch
-										? "bg-green-100 text-green-800 dark:border dark:border-green-500/30 dark:bg-green-800/30 dark:text-green-200"
-										: "bg-red-100 text-red-800 dark:border dark:border-red-500/30 dark:bg-red-800/30 dark:text-red-200"
-								}`}
-							>
-								<span className="font-medium">Üniversite: </span>
-								<span className="break-words">{guess.university}</span>
-								{guess.universityMatch ? " ✓" : " ✗"}
-								{/* Show the actual correct answer if the guess was correct but different */}
-								{guess.universityMatch && !isExactMatch(guess.university, currentProgram.universityName) && (
-									<div className="mt-1 text-green-600 text-xs dark:text-green-400">
-										Doğru cevap: {currentProgram.universityName}
-									</div>
-								)}
-							</div>
-							<div
-								className={`rounded p-2 text-sm sm:text-base ${
-									guess.programMatch
-										? "bg-green-100 text-green-800 dark:border dark:border-green-500/30 dark:bg-green-800/30 dark:text-green-200"
-										: "bg-red-100 text-red-800 dark:border dark:border-red-500/30 dark:bg-red-800/30 dark:text-red-200"
-								}`}
-							>
-								<span className="font-medium">Program: </span>
-								<span className="break-words">{guess.program}</span>
-								{guess.programMatch ? " ✓" : " ✗"}
-								{/* Show the actual correct answer if the guess was correct but different */}
-								{guess.programMatch && guess.program !== currentProgram.programName && (
-									<div className="mt-1 text-green-600 text-xs dark:text-green-400">
-										Doğru cevap: {currentProgram.programName}
-									</div>
-								)}
-							</div>
+							<p className="font-semibold text-sm">Üniversite</p>
+							<p className="mt-1 break-words text-sm">{guess.university}</p>
+							<p className="mt-1 text-xs">{guess.universityMatch ? "Doğru" : "Yanlış"}</p>
+							{guess.universityMatch && !isExactMatch(guess.university, currentProgram.universityName) && (
+								<p className="mt-1 text-xs">Doğru cevap: {currentProgram.universityName}</p>
+							)}
 						</div>
-					))}
-				</div>
+						<div
+							className={`rounded-lg border p-2.5 ${
+								guess.programMatch
+									? "border-sky-200/70 bg-sky-500/[0.12] dark:border-sky-500/30"
+									: "border-rose-200/70 bg-rose-500/[0.12] dark:border-rose-500/30"
+							}`}
+						>
+							<p className="font-semibold text-sm">Program</p>
+							<p className="mt-1 break-words text-sm">{guess.program}</p>
+							<p className="mt-1 text-xs">{guess.programMatch ? "Doğru" : "Yanlış"}</p>
+							{guess.programMatch && guess.program !== currentProgram.programName && (
+								<p className="mt-1 text-xs">Doğru cevap: {currentProgram.programName}</p>
+							)}
+						</div>
+					</div>
+				))}
 			</CardContent>
 		</Card>
 	);

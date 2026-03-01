@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Program } from "@/lib/gameData";
-import { CheckCircle, Copy, RefreshCw, Share2 } from "lucide-react";
+import { CheckCircle2, Copy, RefreshCw, Share2 } from "lucide-react";
 import { useState } from "react";
 
 interface GameWonModalProps {
@@ -32,51 +32,34 @@ export function GameWonModal({
 
 	const generateShareText = () => {
 		const gameId = currentProgram.id || 0;
-		const universityEmoji = "🏛️";
-		const programEmoji = "📚";
-
-		// Generate attempt summary with emojis
 		const attemptSummary = guessHistory
-			.map((guess) => {
-				const universityStatus = guess.universityMatch ? "🟢" : "🔴";
-				const programStatus = guess.programMatch ? "🟢" : "🔴";
-				return `${universityStatus}${programStatus}`;
-			})
+			.map((guess) => `${guess.universityMatch ? "D" : "Y"}${guess.programMatch ? "D" : "Y"}`)
 			.join(" ");
 
-		return `🎓 Atlasguessr #${gameId}
-
-${universityEmoji} ${currentProgram.universityName}
-${programEmoji} ${currentProgram.programName}
-
-📍 ${currentProgram.cityName}
-🎯 ${attempts} denemede tamamlandı!
-
-${attemptSummary}
-
-🔗 atlasguessr.xyz`;
+		return `Atlasguessr #${gameId}
+Üniversite: ${currentProgram.universityName}
+Program: ${currentProgram.programName}
+Şehir: ${currentProgram.cityName}
+Deneme: ${attempts}
+Tahmin Özeti: ${attemptSummary}
+atlasguessr.xyz`;
 	};
 
 	const shareResult = async () => {
 		const shareText = generateShareText();
-
-		// Check if we're on mobile (touch device) and if native sharing is available
 		const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
 		if (isMobile && navigator.share) {
-			// Use native sharing only on mobile devices
 			try {
 				await navigator.share({
 					title: "Atlasguessr",
 					text: shareText,
 				});
-			} catch (error) {
-				// Fallback to clipboard if sharing fails
-				copyToClipboard(shareText);
+			} catch {
+				await copyToClipboard(shareText);
 			}
 		} else {
-			// Always use clipboard on desktop
-			copyToClipboard(shareText);
+			await copyToClipboard(shareText);
 		}
 	};
 
@@ -84,7 +67,7 @@ ${attemptSummary}
 		try {
 			await navigator.clipboard.writeText(text);
 			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
+			setTimeout(() => setCopied(false), 1800);
 		} catch (error) {
 			console.error("Failed to copy to clipboard:", error);
 		}
@@ -97,110 +80,65 @@ ${attemptSummary}
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="mx-2 w-full max-w-md rounded-xl border-green-200 bg-green-50 p-0 shadow-2xl sm:mx-4 dark:border-green-800 dark:bg-slate-800">
-				{/* Celebration Header */}
-				<div className="bg-green-500 px-4 py-6 text-center text-white sm:px-6 sm:py-8 dark:bg-green-600">
-					<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:mb-3 sm:h-16 sm:w-16">
-						<CheckCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+			<DialogContent className="p-0">
+				<div className="border-emerald-300/70 border-b bg-emerald-500/[0.1] px-6 py-5 dark:border-emerald-500/30">
+					<div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
+						<CheckCircle2 className="h-5 w-5" />
 					</div>
 					<DialogHeader>
-						<DialogTitle className="font-bold text-white text-xl sm:text-2xl">🎉 Tebrikler!</DialogTitle>
-						<DialogDescription className="text-green-100">{attempts} denemede başardınız!</DialogDescription>
+						<DialogTitle className="text-2xl">Tebrikler</DialogTitle>
+						<DialogDescription>{attempts} denemede doğru cevabı buldunuz.</DialogDescription>
 					</DialogHeader>
 				</div>
 
-				{/* Game Result Details */}
-				<div className="space-y-3 p-4 sm:space-y-4 sm:p-6">
-					{/* University and Program */}
-					<div className="space-y-2 sm:space-y-3">
-						<div className="rounded-lg bg-blue-50 p-3 sm:p-4">
-							<div className="flex items-center gap-2 text-blue-800">
-								<span className="text-base sm:text-lg">🏛️</span>
-								<div>
-									<p className="font-medium text-blue-600 text-xs">ÜNİVERSİTE</p>
-									<p className="font-semibold text-sm leading-tight sm:text-base">{currentProgram.universityName}</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="rounded-lg bg-purple-50 p-3 sm:p-4">
-							<div className="flex items-center gap-2 text-purple-800">
-								<span className="text-base sm:text-lg">📚</span>
-								<div>
-									<p className="font-medium text-purple-600 text-xs">PROGRAM</p>
-									<p className="font-semibold text-sm leading-tight sm:text-base">{currentProgram.programName}</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="rounded-lg bg-orange-50 p-3 sm:p-4">
-							<div className="flex items-center gap-2 text-orange-800">
-								<span className="text-base sm:text-lg">📍</span>
-								<div>
-									<p className="font-medium text-orange-600 text-xs">ŞEHİR</p>
-									<p className="font-semibold text-sm sm:text-base">{currentProgram.cityName}</p>
-								</div>
-							</div>
-						</div>
+				<div className="space-y-4 px-6 pb-6">
+					<div className="grid gap-2 rounded-xl border border-sky-200/70 bg-sky-500/[0.08] p-3 dark:border-sky-500/25">
+						<p className="text-muted-foreground text-xs uppercase tracking-wide">Üniversite</p>
+						<p className="font-semibold text-sm sm:text-base">{currentProgram.universityName}</p>
+						<p className="text-muted-foreground text-xs uppercase tracking-wide">Program</p>
+						<p className="font-semibold text-sm sm:text-base">{currentProgram.programName}</p>
+						<p className="text-muted-foreground text-xs uppercase tracking-wide">Şehir</p>
+						<p className="font-semibold text-sm sm:text-base">{currentProgram.cityName}</p>
 					</div>
 
-					{/* Attempt History Visualization */}
-					<div className="rounded-lg bg-gray-50 p-4 dark:border dark:border-slate-600 dark:bg-slate-800">
-						<p className="mb-3 text-center font-medium text-gray-600 text-sm dark:text-gray-300">Tahmin Geçmişi</p>
-						<div className="flex flex-wrap justify-center gap-3">
+					<div className="rounded-xl border border-violet-200/70 bg-violet-500/[0.08] p-3 dark:border-violet-500/25">
+						<p className="mb-2 font-medium text-sm">Tahmin Geçmişi</p>
+						<div className="flex flex-wrap gap-1.5">
 							{guessHistory.map((guess, index) => (
 								<div
 									key={`${guess.university}-${guess.program}-${index}`}
-									className="fade-in zoom-in flex animate-in gap-0.5"
-									style={{
-										animationDelay: `${index * 150}ms`,
-										animationDuration: "400ms",
-									}}
-									title={`${index + 1}. Tahmin`}
+									className="flex gap-1"
+									title={`${index + 1}. tahmin`}
 								>
 									<div
-										className={`h-6 w-6 rounded-sm transition-all duration-300 hover:scale-110 ${guess.universityMatch ? "bg-green-500" : "bg-red-500"}`}
+										className={`h-4 w-4 rounded-sm ${guess.universityMatch ? "bg-emerald-600/80" : "bg-rose-600/75"}`}
 									/>
-									<div
-										className={`h-6 w-6 rounded-sm transition-all duration-300 hover:scale-110 ${guess.programMatch ? "bg-green-500" : "bg-red-500"}`}
-									/>
+									<div className={`h-4 w-4 rounded-sm ${guess.programMatch ? "bg-sky-600/80" : "bg-rose-600/75"}`} />
 								</div>
 							))}
 						</div>
-						<p className="mt-2 text-center text-gray-500 text-xs dark:text-gray-400">🟢 Doğru • 🔴 Yanlış</p>
 					</div>
 
-					{/* Action Buttons */}
-					<div className="flex gap-2">
+					<div className="grid gap-2 sm:grid-cols-2">
 						<Button
 							onClick={shareResult}
-							className="group flex-1 gap-2 bg-blue-600 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700"
+							variant="outline"
+							className="w-full border-sky-300/70 bg-sky-500/[0.1] text-sky-900 hover:bg-sky-500/[0.2] dark:border-sky-500/30 dark:text-sky-100"
 						>
-							{copied ? (
-								<>
-									<Copy className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-									Kopyalandı!
-								</>
-							) : (
-								<>
-									<Share2 className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-									Paylaş
-								</>
-							)}
+							{copied ? <Copy className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+							{copied ? "Kopyalandı" : "Paylaş"}
 						</Button>
 						<Button
 							onClick={handleNewGame}
-							variant="outline"
-							className="group flex-1 gap-2 border-green-200 bg-white text-green-700 transition-all duration-300 hover:scale-105 hover:bg-green-50 hover:text-green-800 hover:shadow-lg active:scale-95 dark:border-green-700 dark:bg-slate-800 dark:text-green-400 dark:hover:bg-green-900/20 dark:hover:text-green-300"
+							className="w-full bg-[linear-gradient(135deg,oklch(0.6_0.14_160),oklch(0.5_0.13_210))] text-white hover:opacity-95"
 						>
-							<RefreshCw className="h-4 w-4 transition-all duration-300 group-hover:rotate-180 group-hover:scale-110" />
+							<RefreshCw className="h-4 w-4" />
 							Yeni Oyun
 						</Button>
 					</div>
 
-					{/* Game ID for sharing */}
 					{currentProgram.id !== undefined && (
-						<p className="text-center text-gray-400 text-xs dark:text-gray-500">Oyun #{currentProgram.id}</p>
+						<p className="text-center text-muted-foreground text-xs">Oyun #{currentProgram.id}</p>
 					)}
 				</div>
 			</DialogContent>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
 // Type for beforeinstallprompt event
@@ -106,10 +107,10 @@ export function PWAInstallPrompt() {
 		<button
 			type="button"
 			onClick={handleInstallClick}
-			className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-3 font-medium text-white shadow-lg hover:bg-blue-700"
+			className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm shadow-lg hover:bg-secondary"
 			aria-label="Atlasguessr'i uygulama olarak yükle"
 		>
-			<span className="text-lg">📱</span>
+			<Download className="h-4 w-4" />
 			<span>Uygulamayı Yükle</span>
 		</button>
 	);

@@ -15,6 +15,15 @@ import { type Program, gameDataService } from "@/lib/gameData";
 import { useEffect, useRef, useState } from "react";
 
 const RANKING_TYPES: RankingType[] = ["Sayısal", "Eşit Ağırlık", "Sözel", "Yabancı Dil", "Rastgele"];
+const RANKING_TYPE_TONE_CLASSES: Record<RankingType, string> = {
+	Sayısal: "border-sky-300/70 bg-sky-500/[0.12] text-sky-900 dark:border-sky-500/30 dark:text-sky-100",
+	"Eşit Ağırlık":
+		"border-emerald-300/70 bg-emerald-500/[0.12] text-emerald-900 dark:border-emerald-500/30 dark:text-emerald-100",
+	Sözel:
+		"border-fuchsia-300/70 bg-fuchsia-500/[0.12] text-fuchsia-900 dark:border-fuchsia-500/30 dark:text-fuchsia-100",
+	"Yabancı Dil": "border-amber-300/70 bg-amber-500/[0.14] text-amber-900 dark:border-amber-500/30 dark:text-amber-100",
+	Rastgele: "border-violet-300/70 bg-violet-500/[0.12] text-violet-900 dark:border-violet-500/30 dark:text-violet-100",
+};
 
 const parseRankingType = (rankingType: string | null | undefined): RankingType | null => {
 	if (!rankingType) {
@@ -276,7 +285,6 @@ export function OynaPage({ initialRankingType = null }: OynaPageProps) {
 			}
 
 			setCurrentProgram(randomProgram);
-			console.log("Seçilen program: ", randomProgram);
 		} catch (error) {
 			console.error("Failed to get random program:", error);
 		}
@@ -304,15 +312,15 @@ export function OynaPage({ initialRankingType = null }: OynaPageProps) {
 
 	if (!currentProgram) {
 		return (
-			<div className="flex min-h-screen items-center justify-center">
-				<div className="text-center">
-					<p className="text-gray-600 dark:text-gray-300">Oyun yüklenemedi</p>
+			<div className="flex min-h-screen items-center justify-center px-4">
+				<div className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+					<p className="text-muted-foreground">Oyun yüklenemedi.</p>
 					<button
 						type="button"
 						onClick={() => {
 							window.location.href = "/";
 						}}
-						className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+						className="mt-4 rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground"
 					>
 						Ana Sayfaya Dön
 					</button>
@@ -322,105 +330,87 @@ export function OynaPage({ initialRankingType = null }: OynaPageProps) {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50 p-2 sm:p-4 dark:bg-slate-900">
-			<div className="mx-auto max-w-4xl px-2 sm:px-4">
-				<div className="mb-6 text-center sm:mb-8">
-					<h1 className="mb-2 font-bold text-2xl text-indigo-900 sm:text-3xl lg:text-4xl dark:text-indigo-200">
-						🎓 Atlasguessr
-					</h1>
-					<p className="px-2 text-gray-600 text-sm sm:text-base dark:text-gray-300">
-						Türk üniversitelerindeki lisans programlarını tahmin edin!
+		<div className="relative min-h-screen px-3 py-4 sm:px-6 sm:py-8">
+			<div className="-z-10 absolute inset-0 bg-[radial-gradient(circle_at_14%_14%,rgba(14,116,244,0.12),transparent_40%),radial-gradient(circle_at_86%_10%,rgba(245,158,11,0.1),transparent_38%),radial-gradient(circle_at_72%_84%,rgba(16,185,129,0.08),transparent_42%)]" />
+			<div className="mx-auto w-full max-w-5xl">
+				<div className="mb-7 text-center sm:mb-8">
+					<h1 className="text-4xl sm:text-5xl">Atlasguessr</h1>
+					<p className="mt-2 text-muted-foreground text-sm sm:text-base">
+						Türk üniversitelerindeki lisans programlarını tahmin edin.
 					</p>
+					<div className="mx-auto mt-4 h-px w-28 bg-[linear-gradient(90deg,transparent,rgba(51,65,85,0.35),transparent)] dark:bg-[linear-gradient(90deg,transparent,rgba(203,213,225,0.35),transparent)]" />
 					{selectedRankingType && (
-						<div className="mt-3 sm:mt-4">
-							<span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-1 font-medium text-indigo-800 text-xs shadow-sm ring-1 ring-indigo-600/20 sm:px-3 sm:text-sm dark:bg-indigo-900/50 dark:text-indigo-200 dark:ring-indigo-400/30">
+						<div className="mt-4">
+							<span
+								className={`inline-flex rounded-full border px-3 py-1 font-medium text-xs sm:text-sm ${RANKING_TYPE_TONE_CLASSES[selectedRankingType]}`}
+							>
 								Sıralama Türü: {selectedRankingType}
 							</span>
 						</div>
 					)}
 				</div>
 
-				<div className="space-y-4 sm:space-y-6">
-					<div>
-						<GameStats attempts={attempts} universityCorrect={universityCorrect} programCorrect={programCorrect} />
-					</div>
+				<GameStats attempts={attempts} universityCorrect={universityCorrect} programCorrect={programCorrect} />
 
-					<div>
-						<div className="mb-4 grid gap-4 sm:mb-6 sm:gap-6 lg:grid-cols-2">
-							<div>
-								<HintsCard currentProgram={currentProgram} />
-							</div>
-
-							<div>
-								<InputForm
-									universityGuess={universityGuess}
-									programGuess={programGuess}
-									universityCorrect={universityCorrect}
-									programCorrect={programCorrect}
-									gameWon={gameWon}
-									filteredUniversitySuggestions={filteredUniversitySuggestions}
-									filteredProgramSuggestions={filteredProgramSuggestions}
-									showProgramDropdown={showProgramDropdown}
-									setShowProgramDropdown={setShowProgramDropdown}
-									onUniversityChange={handleUniversityInputChange}
-									onUniversityInputFocus={handleUniversityInputFocus}
-									onProgramChange={handleProgramInputChange}
-									onProgramInputFocus={handleProgramInputFocus}
-									onUniversitySelect={selectUniversitySuggestion}
-									onProgramSelect={selectProgramSuggestion}
-									onSubmit={checkGuess}
-									universityInputRef={universityInputRef}
-									programInputRef={programInputRef}
-									onProgramInputMouseDown={() => setProgramInputFocusedByUser(true)}
-									allProgramNames={allProgramNames}
-									programsForSelectedUniversity={programsForSelectedUniversity}
-									answerSubmitted={answerSubmitted}
-								/>
-							</div>
-						</div>
-					</div>
-
-					<div>
-						<ActionButtons
-							gameWon={gameWon}
-							onShowAnswer={() => setShowAnswerModal(true)}
-							onResetGame={resetGame}
-							onNewGameSession={startNewGameSession}
-						/>
-					</div>
-
-					<div>
-						<GuessHistory guessHistory={guessHistory} currentProgram={currentProgram} isExactMatch={isExactMatch} />
-					</div>
-
-					<div>
-						<GameInstructions />
-					</div>
+				<div className="mb-6 grid gap-4 lg:grid-cols-2">
+					<HintsCard currentProgram={currentProgram} />
+					<InputForm
+						universityGuess={universityGuess}
+						programGuess={programGuess}
+						universityCorrect={universityCorrect}
+						programCorrect={programCorrect}
+						gameWon={gameWon}
+						filteredUniversitySuggestions={filteredUniversitySuggestions}
+						filteredProgramSuggestions={filteredProgramSuggestions}
+						showProgramDropdown={showProgramDropdown}
+						setShowProgramDropdown={setShowProgramDropdown}
+						onUniversityChange={handleUniversityInputChange}
+						onUniversityInputFocus={handleUniversityInputFocus}
+						onProgramChange={handleProgramInputChange}
+						onProgramInputFocus={handleProgramInputFocus}
+						onUniversitySelect={selectUniversitySuggestion}
+						onProgramSelect={selectProgramSuggestion}
+						onSubmit={checkGuess}
+						universityInputRef={universityInputRef}
+						programInputRef={programInputRef}
+						onProgramInputMouseDown={() => setProgramInputFocusedByUser(true)}
+						answerSubmitted={answerSubmitted}
+					/>
 				</div>
 
-				{currentProgram && (
-					<GameWonModal
-						isOpen={gameWon}
-						onClose={() => setGameWon(false)}
-						currentProgram={currentProgram}
-						attempts={attempts}
-						onNewGame={resetGame}
-						guessHistory={guessHistory}
-					/>
-				)}
+				<ActionButtons
+					gameWon={gameWon}
+					onShowAnswer={() => setShowAnswerModal(true)}
+					onResetGame={resetGame}
+					onNewGameSession={startNewGameSession}
+				/>
 
-				{currentProgram && (
-					<ShowAnswerModal
-						isOpen={showAnswerModal}
-						onClose={() => setShowAnswerModal(false)}
-						currentProgram={currentProgram}
-						attempts={attempts}
-						onNewGame={resetGame}
-					/>
-				)}
+				<GuessHistory guessHistory={guessHistory} currentProgram={currentProgram} isExactMatch={isExactMatch} />
 
+				<GameInstructions />
 				<Footer />
 			</div>
+
+			{currentProgram && (
+				<GameWonModal
+					isOpen={gameWon}
+					onClose={() => setGameWon(false)}
+					currentProgram={currentProgram}
+					attempts={attempts}
+					onNewGame={resetGame}
+					guessHistory={guessHistory}
+				/>
+			)}
+
+			{currentProgram && (
+				<ShowAnswerModal
+					isOpen={showAnswerModal}
+					onClose={() => setShowAnswerModal(false)}
+					currentProgram={currentProgram}
+					attempts={attempts}
+					onNewGame={resetGame}
+				/>
+			)}
 		</div>
 	);
 }

@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useEffect, useRef } from "react";
 import type React from "react";
 import type { RefObject } from "react";
+import { useEffect, useRef } from "react";
 
 interface InputFormProps {
 	universityGuess: string;
@@ -27,8 +27,6 @@ interface InputFormProps {
 	onSubmit: () => void;
 	onProgramInputFocus: () => void;
 	onProgramInputMouseDown?: () => void;
-	allProgramNames: string[]; // Add this prop
-	programsForSelectedUniversity: string[];
 	answerSubmitted?: boolean;
 }
 
@@ -52,8 +50,6 @@ export function InputForm({
 	onSubmit,
 	onProgramInputFocus,
 	onProgramInputMouseDown,
-	allProgramNames = [], // Default to empty array
-	programsForSelectedUniversity = [],
 	answerSubmitted = false,
 }: InputFormProps) {
 	const programDropdownRef = useRef<HTMLDivElement>(null);
@@ -72,14 +68,18 @@ export function InputForm({
 	}, [showProgramDropdown, setShowProgramDropdown]);
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle className="text-lg sm:text-xl">Tahmininizi Yapın</CardTitle>
+		<Card className="border-border/80 bg-card/96 shadow-sm">
+			<CardHeader className="border-border/70 border-b pb-4">
+				<CardTitle className="text-xl">Tahmin</CardTitle>
 			</CardHeader>
-			<CardContent className="space-y-3 sm:space-y-4">
-				<div className="pb-4">
-					<label htmlFor="university-guess" className="mb-2 block font-medium text-sm">
-						Üniversite Adı
+			<CardContent className="space-y-5">
+				<div>
+					<label
+						htmlFor="university-guess"
+						className="mb-2 flex items-center gap-2 font-medium text-muted-foreground text-sm"
+					>
+						<span className="inline-block h-1.5 w-1.5 rounded-full bg-sky-500" />
+						Üniversite
 					</label>
 					<Input
 						id="university-guess"
@@ -89,20 +89,19 @@ export function InputForm({
 						onFocus={onUniversityInputFocus}
 						placeholder="Örn: BOĞAZİÇİ ÜNİVERSİTESİ"
 						className={
-							universityCorrect ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20" : ""
+							universityCorrect
+								? "border-emerald-300/70 bg-emerald-500/[0.08] dark:border-emerald-500/30"
+								: "border-sky-200/70 bg-sky-500/[0.05] focus-visible:border-sky-400 dark:border-sky-500/25"
 						}
 						disabled={gameWon || answerSubmitted}
 						autoComplete="off"
 					/>
 					{filteredUniversitySuggestions.length > 0 && (
-						<div className="mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800">
-							{filteredUniversitySuggestions.map((suggestion, index) => (
+						<div className="mt-2 max-h-52 w-full overflow-y-auto rounded-lg border border-sky-200/70 bg-sky-500/[0.05] dark:border-sky-500/25">
+							{filteredUniversitySuggestions.map((suggestion) => (
 								<button
 									key={suggestion}
-									className="w-full cursor-pointer p-2 text-left text-sm transition-all duration-200 hover:scale-[1.02] hover:bg-gray-100 active:scale-[0.98] sm:text-base dark:text-gray-200 dark:hover:bg-slate-700"
-									style={{
-										animationDelay: `${index * 50}ms`,
-									}}
+									className="w-full border-sky-200/70 border-b p-2.5 text-left text-sm last:border-b-0 hover:bg-sky-500/[0.12] dark:border-sky-500/25"
 									type="button"
 									onClick={() => onUniversitySelect(suggestion)}
 								>
@@ -113,9 +112,13 @@ export function InputForm({
 					)}
 				</div>
 
-				<div className="pb-4">
-					<label htmlFor="program-guess" className="mb-2 block font-medium text-sm">
-						Program Adı
+				<div>
+					<label
+						htmlFor="program-guess"
+						className="mb-2 flex items-center gap-2 font-medium text-muted-foreground text-sm"
+					>
+						<span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500" />
+						Program
 					</label>
 					<div className="relative">
 						<Input
@@ -125,39 +128,29 @@ export function InputForm({
 							onChange={onProgramChange}
 							onFocus={onProgramInputFocus}
 							onMouseDown={onProgramInputMouseDown}
-							placeholder="Örn: Bilgisayar Mühendisliği (4 Yıllık)"
+							placeholder="Örn: Bilgisayar Mühendisliği"
 							className={
-								programCorrect ? "border-green-500 bg-green-50 pr-8 dark:border-green-400 dark:bg-green-900/20" : "pr-8"
+								programCorrect
+									? "border-emerald-300/70 bg-emerald-500/[0.08] pr-9 dark:border-emerald-500/30"
+									: "border-violet-200/70 bg-violet-500/[0.05] pr-9 focus-visible:border-violet-400 dark:border-violet-500/25"
 							}
 							disabled={gameWon || answerSubmitted}
-							onKeyPress={(e) => e.key === "Enter" && onSubmit()}
+							onKeyDown={(e) => e.key === "Enter" && onSubmit()}
 							autoComplete="off"
 						/>
 						<button
 							type="button"
-							aria-label="Açılır menüyü göster"
-							className="-translate-y-1/2 absolute top-1/2 right-2 rounded-full border-none bg-transparent p-1 text-gray-400 outline-none transition-all duration-200 hover:scale-110 hover:text-gray-600 focus:ring-2 focus:ring-blue-400 active:scale-95 dark:text-gray-300 dark:hover:text-gray-100"
-							style={{ lineHeight: 0 }}
+							aria-label="Program listesi"
+							className="-translate-y-1/2 absolute top-1/2 right-2 rounded-md p-1 text-muted-foreground hover:bg-secondary"
 							onClick={() => {
 								if (programInputRef.current) {
 									programInputRef.current.focus();
 								}
-								if (typeof onProgramInputMouseDown === "function") {
-									onProgramInputMouseDown();
-								}
-								if (typeof onProgramInputFocus === "function") {
-									onProgramInputFocus();
-								}
+								onProgramInputMouseDown?.();
+								onProgramInputFocus();
 							}}
 						>
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-								style={{ display: "block" }}
-							>
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<title>Açılır menü oku</title>
 								<path
 									d="M4.5 6.5L8 10L11.5 6.5"
@@ -169,19 +162,15 @@ export function InputForm({
 							</svg>
 						</button>
 					</div>
-					{/* Always show dropdown if there are suggestions and showProgramDropdown is true */}
 					{filteredProgramSuggestions.length > 0 && showProgramDropdown && (
 						<div
 							ref={programDropdownRef}
-							className="mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800"
+							className="mt-2 max-h-52 w-full overflow-y-auto rounded-lg border border-violet-200/70 bg-violet-500/[0.05] dark:border-violet-500/25"
 						>
-							{filteredProgramSuggestions.map((suggestion, index) => (
+							{filteredProgramSuggestions.map((suggestion) => (
 								<button
 									key={suggestion}
-									className="w-full cursor-pointer p-2 text-left text-sm transition-all duration-200 hover:scale-[1.02] hover:bg-gray-100 active:scale-[0.98] sm:text-base dark:text-gray-200 dark:hover:bg-slate-700"
-									style={{
-										animationDelay: `${index * 50}ms`,
-									}}
+									className="w-full border-violet-200/70 border-b p-2.5 text-left text-sm last:border-b-0 hover:bg-violet-500/[0.12] dark:border-violet-500/25"
 									type="button"
 									onClick={() => onProgramSelect(suggestion)}
 								>
@@ -192,15 +181,13 @@ export function InputForm({
 					)}
 				</div>
 
-				<div className="mt-6">
-					<Button
-						onClick={onSubmit}
-						disabled={!universityGuess.trim() || !programGuess.trim() || gameWon || answerSubmitted}
-						className="w-full text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:hover:scale-100 sm:text-base"
-					>
-						Tahmin Et
-					</Button>
-				</div>
+				<Button
+					onClick={onSubmit}
+					disabled={!universityGuess.trim() || !programGuess.trim() || gameWon || answerSubmitted}
+					className="w-full bg-[linear-gradient(135deg,oklch(0.53_0.14_255),oklch(0.47_0.12_285))] text-white hover:opacity-95"
+				>
+					Tahmini Kontrol Et
+				</Button>
 			</CardContent>
 		</Card>
 	);
