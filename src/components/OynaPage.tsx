@@ -1,5 +1,3 @@
-import type React from "react";
-
 import { ActionButtons } from "@/components/ActionButtons";
 import { Footer } from "@/components/Footer";
 import { GameInstructions } from "@/components/GameInstructions";
@@ -12,7 +10,7 @@ import { LoadingState } from "@/components/LoadingState";
 import type { RankingType } from "@/components/RankingTypeSelector";
 import { ShowAnswerModal } from "@/components/ShowAnswerModal";
 import { type Program, gameDataService } from "@/lib/gameData";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "preact/compat";
 
 const RANKING_TYPES: RankingType[] = ["Sayısal", "Eşit Ağırlık", "Sözel", "Yabancı Dil", "Rastgele"];
 const RANKING_TYPE_TONE_CLASSES: Record<RankingType, string> = {

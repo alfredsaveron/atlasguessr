@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect } from "preact/compat";
 
 export function ServiceWorkerRegistration() {
 	useEffect(() => {

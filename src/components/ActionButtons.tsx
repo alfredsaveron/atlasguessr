@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Eye, RefreshCw } from "lucide-react";
+import { ArrowLeft, Eye, RefreshCw } from "lucide-preact";
 
 interface ActionButtonsProps {
 	gameWon: boolean;

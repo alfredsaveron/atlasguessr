@@ -3,9 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import type React from "react";
-import type { RefObject } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "preact/compat";
 
 interface InputFormProps {
 	universityGuess: string;

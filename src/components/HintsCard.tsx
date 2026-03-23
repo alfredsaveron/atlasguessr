@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Program } from "@/lib/gameData";
-import { DollarSign, ListOrdered, MapPin, Trophy, University } from "lucide-react";
-import type React from "react";
+import { DollarSign, ListOrdered, MapPin, Trophy, University } from "lucide-preact";
+import type { ComponentType } from "preact/compat";
 
 interface HintsCardProps {
 	currentProgram: Program;
@@ -18,7 +18,7 @@ function HintRow({
 }: {
 	label: string;
 	value: string;
-	icon: React.ComponentType<{ className?: string }>;
+	icon: ComponentType<{ className?: string }>;
 	toneClass: string;
 	iconClass: string;
 }) {

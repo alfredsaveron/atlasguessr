@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Program } from "@/lib/gameData";
-import { CheckCircle2, Copy, RefreshCw, Share2 } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle2, Copy, RefreshCw, Share2 } from "lucide-preact";
+import { useState } from "preact/compat";
 
 interface GameWonModalProps {
 	isOpen: boolean;
